@@ -37,13 +37,19 @@ function App() {
     setIsLoading(true)
 
     try {
-      // 실제 구현에서는 백엔드 API 호출
-      // 현재는 시뮬레이션
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      const response = await fetch('http://localhost:3001/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: content })
+      })
+
+      const data = await response.json()
       
       const botMessage = {
         id: Date.now() + 1,
-        content: `프로젝트 매니저 AI입니다. "${content}"에 대해 도움을 드리겠습니다. 프로젝트 관리, 일정 계획, 팀 협업에 관한 질문을 해주세요.`,
+        content: data.content || '죄송합니다. 응답을 받을 수 없습니다.',
         sender: 'bot',
         timestamp: new Date()
       }
@@ -51,6 +57,13 @@ function App() {
       setMessages(prev => [...prev, botMessage])
     } catch (error) {
       console.error('메시지 전송 실패:', error)
+      const errorMessage = {
+        id: Date.now() + 1,
+        content: '네트워크 오류가 발생했습니다. 서버가 실행 중인지 확인해주세요.',
+        sender: 'bot',
+        timestamp: new Date()
+      }
+      setMessages(prev => [...prev, errorMessage])
     } finally {
       setIsLoading(false)
     }
