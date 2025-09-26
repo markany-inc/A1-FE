@@ -40,9 +40,13 @@ function App() {
     setIsLoading(true)
 
     try {
-      // 프록시를 통한 API 호출 (CORS 문제 해결)
-      const apiUrl = '/api/chat'
-      console.log('API 호출 시작:', apiUrl)
+      // 환경별 API URL 설정
+      const isDevelopment = import.meta.env.DEV
+      const apiUrl = isDevelopment 
+        ? '/api/chat'  // 개발환경: 프록시 사용
+        : 'https://kej7nzklnb.execute-api.ap-northeast-2.amazonaws.com/dev/api/chat'  // 배포환경: 직접 호출
+      
+      console.log('API 호출 시작:', apiUrl, '(개발환경:', isDevelopment, ')')
       
       const response = await fetch(apiUrl, {
         method: 'POST',
