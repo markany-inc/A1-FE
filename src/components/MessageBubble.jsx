@@ -1,3 +1,4 @@
+import ReactMarkdown from 'react-markdown'
 import './MessageBubble.css'
 
 const MessageBubble = ({ message }) => {
@@ -6,7 +7,11 @@ const MessageBubble = ({ message }) => {
   return (
     <div className={`message-bubble ${isUser ? 'user' : 'bot'}`}>
       <div className="message-content">
-        {message.content}
+        {isUser ? (
+          message.content
+        ) : (
+          <ReactMarkdown>{message.content}</ReactMarkdown>
+        )}
       </div>
       <div className="message-time">
         {new Date(message.timestamp).toLocaleTimeString('ko-KR', {

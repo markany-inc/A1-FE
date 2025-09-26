@@ -1,12 +1,15 @@
 import { useState, useEffect, useRef } from 'react'
 import ChatWindow from './components/ChatWindow'
 import InputArea from './components/InputArea'
+import SidePanel from './components/SidePanel'
 import './App.css'
 
 function App() {
   const [messages, setMessages] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [showWelcome, setShowWelcome] = useState(true)
+  const [sidePanelOpen, setSidePanelOpen] = useState(false)
+  const [sidePanelData, setSidePanelData] = useState({ projects: [], suggestions: [] })
   const chatWindowRef = useRef(null)
 
   // 로컬 스토리지에서 채팅 기록 불러오기
@@ -45,7 +48,12 @@ function App() {
         body: JSON.stringify({ message: content })
       })
 
+      if (!response.ok) {
+        throw new Error('Network response was not ok')
+      }
+
       const data = await response.json()
+      console.log('받은 데이터:', data)
       
       const botMessage = {
         id: Date.now() + 1,
@@ -55,6 +63,19 @@ function App() {
       }
 
       setMessages(prev => [...prev, botMessage])
+      
+      // 사이드 패널 열기 조건 확인
+      if (data.hasImportantInfo === true) {
+        console.log('사이드패널 열기 조건 만족')
+        setSidePanelData({
+          projects: data.projects || [],
+          suggestions: data.suggestions || []
+        })
+        setSidePanelOpen(true)
+      } else {
+        console.log('사이드패널 열기 조건 불만족:', data.hasImportantInfo)
+      }
+      
     } catch (error) {
       console.error('메시지 전송 실패:', error)
       const errorMessage = {
@@ -75,23 +96,43 @@ function App() {
 
   const handleHomeClick = () => {
     setShowWelcome(true)
+    setSidePanelOpen(false)
+  }
+
+  const closeSidePanel = () => {
+    setSidePanelOpen(false)
   }
 
   return (
-    <div className="app">
+    <div className={`app ${sidePanelOpen ? 'with-side-panel' : ''}`}>
       {messages.length > 0 && (
         <button className="home-button" onClick={handleHomeClick}>
           🏠
         </button>
       )}
-      <ChatWindow 
-        ref={chatWindowRef}
-        messages={messages} 
-        isLoading={isLoading}
-        onSuggestedMessage={handleSuggestedMessage}
-        showWelcome={showWelcome}
+      <div 
+        className="main-content"
+        style={{ 
+          width: sidePanelOpen ? '50%' : '100%' 
+        }}
+      >
+        <ChatWindow 
+          ref={chatWindowRef}
+          messages={messages} 
+          isLoading={isLoading}
+          onSuggestedMessage={handleSuggestedMessage}
+          showWelcome={showWelcome}
+        />
+        <InputArea onSendMessage={sendMessage} isLoading={isLoading} />
+      </div>
+      
+      <SidePanel 
+        isOpen={sidePanelOpen}
+        onClose={closeSidePanel}
+        projects={sidePanelData.projects}
+        suggestions={sidePanelData.suggestions}
+        onSendMessage={sendMessage}
       />
-      <InputArea onSendMessage={sendMessage} isLoading={isLoading} />
     </div>
   )
 }

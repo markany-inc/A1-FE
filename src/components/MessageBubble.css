@@ -3,6 +3,7 @@
   flex-direction: column;
   max-width: 70%;
   animation: messageSlideIn 0.3s ease-out;
+  margin-bottom: 1.2rem;
 }
 
 .message-bubble.user {
@@ -13,13 +14,14 @@
 .message-bubble.bot {
   align-self: flex-start;
   align-items: flex-start;
+  max-width: 100%;
 }
 
 .message-content {
   padding: 12px 16px;
   border-radius: 18px;
   word-wrap: break-word;
-  line-height: 1.4;
+  line-height: 1.6;
   font-size: 14px;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -33,9 +35,12 @@
 }
 
 .message-bubble.bot .message-content {
-  background: rgba(255, 255, 255, 0.1);
+  background: transparent;
   color: #e8e8e8;
   border-bottom-left-radius: 6px;
+  backdrop-filter: none;
+  border: none;
+  box-shadow: none;
 }
 
 .message-time {
@@ -54,6 +59,29 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* 마크다운 스타일링 */
+.message-bubble.bot .message-content p {
+  margin: 2em 0;
+}
+
+.message-bubble.bot .message-content h1,
+.message-bubble.bot .message-content h2,
+.message-bubble.bot .message-content h3 {
+  margin: 2.5em 0 1.5em 0;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+  padding-bottom: 0.5em;
+}
+
+.message-bubble.bot .message-content ul,
+.message-bubble.bot .message-content ol {
+  margin: 2em 0;
+  padding-left: 2em;
+}
+
+.message-bubble.bot .message-content li {
+  margin: 0.5em 0;
 }
 
 /* 반응형 디자인 */
